@@ -19,6 +19,6 @@ Orchestrating the nodes and pulling out all the stops.
 
 ![local context](images/local-context.png)
 
-### Global context(images/global-context.png)
+### Global context
 
 ![global context](images/global-context.png)
