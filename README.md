@@ -1,7 +1,19 @@
 # Organist
 Orchestrating the nodes and pulling out all the stops.
 
-## Streampunk service architecture
+## New FIMS and NMOS - a demonstration of building the JT-NM jigsaw
+
+It all starts with the conceptual model from the [JT-NM Reference Architecture](file:///C:/users/sparkpunk/Google%20Drive/Streampunk%20Drive/tech/specs/jtnm/JT-NMReferenceArchitecturev1.0%20150904%20FINAL.pdf). The elements of this model can be broken down into:
+
+* transport standards and file wrappers - grains;
+* [NMOS](http://www.nmos.tv/) - flows, sources, senders, receivers, devices, nodes, registry;
+* [FIMS](http://www.fims.tv/):
+  * business services: capabilities, tasks, content & product management.
+  * cross cutting services: continuous integration, measurement, monitoring and resource management.
+
+An emerging vision of how to put the pieces of the jigsaw together.
+
+## Dynamic software infrastructure
 
 ### Nodes on a single Node-RED instance
 
@@ -19,6 +31,8 @@ Orchestrating the nodes and pulling out all the stops.
 
 ![local context](images/local-context.png)
 
+Each element in the global context can be the sender or receiver of one or more streams.
+
 ### Global context
 
 ![global context](images/global-context.png)
@@ -26,6 +40,18 @@ Orchestrating the nodes and pulling out all the stops.
 ## Framework for services
 
 The aim is to use the existing [FIMS](/fims-tv/fims) models as a template for a lightweight, micro-services style approach to setting up and tearing down virtual infrastructure to achieve specific jobs. In particular, the FIMS state model and job resource should be a basis for further development.
+
+In the demo, we run a javascript program from the command line that ....
+
+1. Receives the details of an item of content as an argument.
+2. Creates a copy of the Streampunk Media dyanmorse software.
+3. Runs it.
+4. Deploys infrastructure to it.
+5. Runs a transcode process for two minutes.
+6. Stops the transcode.
+7. Stops the dynamorse engine and cleans up.
+
+The content item is described as a TVClip using the semantic definition at [schema.org](http://www.schema.org/).
 
 
 
