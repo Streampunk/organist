@@ -43,15 +43,48 @@ The aim is to use the existing [FIMS](/fims-tv/fims) models as a template for a 
 
 Example content item ... a [TV Clip](http://www.schema.org/TVClip).
 
+```json
+{
+  "@context": "http://schema.org/",
+  "@type": "TVClip",
+  "name": "Streampunk Subculture",
+  "file": "Streampunk Media Ltd",
+  "fileFormat": "video/raw; width=1920; height=1080",
+  "url": "../media/examples/rtp-video-rfc4175-1080i50-sync.pcap",
+  "dateCreated": "2016-09-10",
+  "actor": {
+    "type" : "Person",
+    "name" : "Richard Cartwright",
+    "jobTitle" : "Big Punk"
+  }
+}
+```
+
 In the demo, we run a javascript program from the command line that ....
 
-1. Run up dynamorse and ledger.
-2. Receives the details of work to do, content to use and duration.
+1. Run up [dynamorse](/Streampunk/dynamorse) and [ledger](/Streampunk/ledger).
+2. Receives the details of work to do, content to use and duration, e.g. run `node [index.js](./index.js) transform.json subculture.json 120`
 3. Deploy infrastructure.
 4. Runs a transcode process for two minutes.
 5. Stops the transcode.
 
-The job could be described as [actions](http://schema.org/docs/actions.html). 
+The job could be described as [actions](http://schema.org/docs/actions.html). For example:
+
+```json
+{
+  "@context": "http://schema.org/",
+  "@type": "Action",
+  "name": "Live Transform",
+  "description" : "Do a live transcode of a stream.",
+  "instrument" : { "type" : "Thing", "name" : "dynamorse" },
+  "location" : "Holiday Inn, RAI",
+  "startTime" : "20160911T11:32:51Z",
+  "endTime" : "20160911T11:34:51Z",
+  "actionStatus" : { "type" : "PotentialActionStatus" , "name" : "Queued" },
+  "object" : { "type" : "CreativeWork" },
+  "result" : { "type" : "CreativeWork" }
+}
+```
 
 
 
