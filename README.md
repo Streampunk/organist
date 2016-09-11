@@ -76,7 +76,16 @@ The job could be described as [actions](http://schema.org/docs/actions.html). Fo
   "@type": "Action",
   "name": "Live Transform",
   "description" : "Do a live transcode of a stream.",
-  "instrument" : { "type" : "Thing", "name" : "dynamorse" },
+  "instrument" : {
+    "type" : "Thing",
+    "name" : "dynamorse transform",
+    "url" : "transform.json" },
+  "target" : {
+    "type" : "EntryPoint",
+    "httpMethod" : "POST",
+    "urlTemplate" : "http://localhost:8000",
+    "contentType" : "application/json"
+  },
   "location" : "Holiday Inn, RAI",
   "startTime" : "20160911T11:32:51Z",
   "endTime" : "20160911T11:34:51Z",
