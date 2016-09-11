@@ -41,6 +41,8 @@ Each element in the global context can be the sender or receiver of one or more 
 
 The aim is to use the existing [FIMS](/fims-tv/fims) models as a template for a lightweight, micro-services style approach to setting up and tearing down virtual infrastructure to achieve specific jobs. In particular, the FIMS state model and job resource should be a basis for further development.
 
+Example content item ... a [TV Clip](http://www.schema.org/TVClip).
+
 In the demo, we run a javascript program from the command line that ....
 
 1. Run up dynamorse and ledger.
@@ -49,7 +51,7 @@ In the demo, we run a javascript program from the command line that ....
 4. Runs a transcode process for two minutes.
 5. Stops the transcode.
 
-The content item is described as a TVClip using the semantic definition at [schema.org](http://www.schema.org/).
+The job could be described as [actions](http://schema.org/docs/actions.html). 
 
 
 
