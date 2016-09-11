@@ -43,13 +43,11 @@ The aim is to use the existing [FIMS](/fims-tv/fims) models as a template for a 
 
 In the demo, we run a javascript program from the command line that ....
 
-1. Receives the details of an item of content as an argument.
-2. Creates a copy of the Streampunk Media dyanmorse software.
-3. Runs it.
-4. Deploys infrastructure to it.
-5. Runs a transcode process for two minutes.
-6. Stops the transcode.
-7. Stops the dynamorse engine and cleans up.
+1. Run up dynamorse and ledger.
+2. Receives the details of work to do, content to use and duration.
+3. Deploy infrastructure.
+4. Runs a transcode process for two minutes.
+5. Stops the transcode.
 
 The content item is described as a TVClip using the semantic definition at [schema.org](http://www.schema.org/).
 
