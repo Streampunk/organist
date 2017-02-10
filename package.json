@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/Streampunk/organist/issues"
   },
-  "homepage": "https://github.com/Streampunk/organist#readme"
+  "homepage": "https://github.com/Streampunk/organist#readme",
+  "dependencies": {
+    "bluebird": "^3.4.7"
+  }
 }

@@ -50,7 +50,7 @@ Example content item ... a [TV Clip](http://www.schema.org/TVClip).
   "name": "Streampunk Subculture",
   "file": "Streampunk Media Ltd",
   "fileFormat": "video/raw; width=1920; height=1080",
-  "url": "../media/examples/rtp-video-rfc4175-1080i50-sync.pcap",
+  "url": "Documents/media/examples/rtp-video-rfc4175-1080i50-sync.pcap",
   "dateCreated": "2016-09-10",
   "actor": {
     "type" : "Person",
