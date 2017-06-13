@@ -1,0 +1,23 @@
+{
+  "name": "lambda",
+  "version": "0.0.1",
+  "description": "Testing AWS Lambda",
+  "main": "index.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Streampunk/lambda.git"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.52.0"
+  },
+  "devDependencies": {
+  },
+  "author": "Streampunk Media Ltd",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Streampunk/lambda/issues"
+  },
+  "homepage": "https://github.com/Streampunk/lambda#readme"
+}
