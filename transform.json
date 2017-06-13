@@ -1,5 +1,5 @@
 {
-   "label" : "FIMS",
+   "label" : "NAB 2017",
    "id" : "11d8d548.ee272b",
    "nodes" : [
       {
@@ -103,9 +103,9 @@
          "z" : "11d8d548.ee272b",
          "x" : 655,
          "y" : 567,
-         "name" : "FIMS output",
-         "file" : "fims.h264",
-         "headers" : "fims.json",
+         "name" : "Punk output",
+         "file" : "streampunk.h264",
+         "headers" : "streampunk.json",
          "wires" : [],
          "id" : "cfe37d0d.727f3",
          "timeout" : "40"

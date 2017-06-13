@@ -24,7 +24,7 @@ console.log('Loading required features into Node-RED');
 var loadModule = (modName) => new Promise((resolve, reject) => {
   var postData = `{"module": "${modName}"}`;
   var options = {
-    hostname: 'nucty',
+    hostname: 'lemarr',
     port: 1880,
     path: '/nodes',
     method: 'POST',
@@ -52,7 +52,7 @@ var flowID = null;
 var postJob = () => new Promise((resolve, reject) => {
   var postData = JSON.stringify(jobJSON);
   var options = {
-    hostname: 'nucty',
+    hostname: 'lemarr',
     port: 1880,
     path: '/flow',
     method: 'POST',
@@ -88,7 +88,7 @@ var postJob = () => new Promise((resolve, reject) => {
 var deleteJob = () => new Promise((resolve, reject) => {
   setTimeout(() => {
     var options = {
-      hostname: 'nucty',
+      hostname: 'lemarr',
       port: 1880,
       path: '/flow/' + flowID,
       method: 'DELETE'
