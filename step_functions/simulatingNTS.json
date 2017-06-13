@@ -1,0 +1,69 @@
+{
+  "Comment": "Example NTS state machine",
+  "StartAt": "ParallelSetup",
+  "States": {
+    "ParallelSetup": {
+      "Type" : "Parallel",
+      "Branches": [
+        {
+          "StartAt": "BringUpCloud1",
+          "States": {
+            "BringUpCloud1": {
+              "Type": "Task",
+              "InputPath" : "$.mixParams",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:BringUpMachine",
+              "Next": "InstallDynamorseCore1"
+            },
+            "InstallDynamorseCore1": {
+              "Type": "Wait",
+              "Seconds": 3,
+              "Next": "InstallMixCapabilities"
+            }, 
+            "InstallMixCapabilities": {
+              "Type": "Wait",
+              "Seconds": 5,
+              "End" : true
+            }
+          }
+          
+        }, {
+          "StartAt": "BringUpCloud2",
+          "States": {
+            "BringUpCloud2": {
+              "Type": "Task",
+              "InputPath": "$.encodeParams",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:BringUpMachine",
+              "Next": "InstallDynamorseCore2"
+            },
+            "InstallDynamorseCore2": {
+              "Type": "Wait",
+              "Seconds": 2,
+              "Next": "InstallEncodeCapabilities"
+            }, 
+            "InstallEncodeCapabilities": {
+              "Type": "Wait",
+              "Seconds": 4,
+              "End" : true
+            }
+          }
+        }
+      ],
+      "Next": "DeployMix"
+    },
+    "DeployMix": {
+      "Type": "Wait",
+      "Seconds": 3,
+      "Next" : "DeployEncode"
+    },
+    "DeployEncode": {
+      "Type": "Wait",
+      "Seconds": 4,
+      "Next": "RunState"
+    },
+    "RunState": {
+      "Type": "Wait",
+      "Seconds": 13,
+      "End" : true  
+    }
+  }
+}
