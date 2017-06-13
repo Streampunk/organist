@@ -11,35 +11,39 @@
             "BringUpCloud1": {
               "Type": "Task",
               "InputPath" : "$.mixParams",
-              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:BringUpMachine",
-              "Next": "InstallDynamorseCore1"
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:newInstance",
+              "Next": "InstallDynamorseCore1",
+              "ResultPath" : "$.reservation",
+              "OutputPath" : "$"
             },
             "InstallDynamorseCore1": {
               "Type": "Wait",
               "Seconds": 3,
               "Next": "InstallMixCapabilities"
-            }, 
+            },
             "InstallMixCapabilities": {
               "Type": "Wait",
               "Seconds": 5,
               "End" : true
             }
           }
-          
+
         }, {
           "StartAt": "BringUpCloud2",
           "States": {
             "BringUpCloud2": {
               "Type": "Task",
               "InputPath": "$.encodeParams",
-              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:BringUpMachine",
-              "Next": "InstallDynamorseCore2"
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:newInstance",
+              "Next": "InstallDynamorseCore2",
+              "ResultPath" : "$.reservation",
+              "OutputPath" : "$"
             },
             "InstallDynamorseCore2": {
               "Type": "Wait",
               "Seconds": 2,
               "Next": "InstallEncodeCapabilities"
-            }, 
+            },
             "InstallEncodeCapabilities": {
               "Type": "Wait",
               "Seconds": 4,
@@ -63,7 +67,34 @@
     "RunState": {
       "Type": "Wait",
       "Seconds": 13,
-      "End" : true  
+      "Next": "ParallelTearDown"
+    },
+    "ParallelTearDown": {
+      "Type": "Parallel",
+      "Branches": [
+        {
+          "StartAt": "TearDownCloud1",
+          "States": {
+            "TearDownCloud1" : {
+              "Type": "Task",
+              "InputPath" : "$[0]['mixParams']",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:terminateInstance",
+              "End": true
+            }
+          }
+        }, {
+          "StartAt": "TearDownCloud2",
+          "States": {
+            "TearDownCloud2": {
+              "Type": "Task",
+              "InputPath" : "$[1]['encodeParams']",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:terminateInstance",
+              "End": true
+            }
+          }
+        }
+      ],
+      "End": true
     }
   }
 }

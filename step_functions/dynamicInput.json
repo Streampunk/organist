@@ -1,0 +1,10 @@
+{
+  "mixParams" : {
+    "instanceName" : "mixer",
+    "instanceType" : "r4.xlarge"
+  },
+  "encodeParams" : {
+    "instanceName": "encoder",
+    "instanceType": "r4.xlarge"
+  }
+}
