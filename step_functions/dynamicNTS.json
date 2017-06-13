@@ -12,13 +12,15 @@
               "Type": "Task",
               "InputPath" : "$.mixParams",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:newInstance",
-              "Next": "InstallDynamorseCore1",
+              "Next": "ExtractInstanceDetails1",
               "ResultPath" : "$.reservation",
               "OutputPath" : "$"
             },
-            "InstallDynamorseCore1": {
-              "Type": "Wait",
-              "Seconds": 3,
+            "ExtractInstanceDetails1": {
+              "Type": "Pass",
+              "InputPath": "$.reservation.Reservations[0].Instances[0]",
+              "ResultPath": "$.instanceDetails",
+              "OutputPath": "$",
               "Next": "InstallMixCapabilities"
             },
             "InstallMixCapabilities": {
@@ -35,13 +37,15 @@
               "Type": "Task",
               "InputPath": "$.encodeParams",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:newInstance",
-              "Next": "InstallDynamorseCore2",
+              "Next": "ExtractInstanceDetails2",
               "ResultPath" : "$.reservation",
               "OutputPath" : "$"
             },
-            "InstallDynamorseCore2": {
-              "Type": "Wait",
-              "Seconds": 2,
+            "ExtractInstanceDetails2": {
+              "Type": "Pass",
+              "InputPath": "$.reservation.Reservations[0].Instances[0]",
+              "ResultPath": "$.instanceDetails",
+              "OutputPath": "$",
               "Next": "InstallEncodeCapabilities"
             },
             "InstallEncodeCapabilities": {
