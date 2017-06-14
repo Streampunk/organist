@@ -1,45 +1,45 @@
 {
   "mixParams" : {
-    "instanceName" : "mixer9",
-    "instanceType" : "t2.micro",
+    "instanceName" : "mixer11",
+    "instanceType" : "r4.xlarge",
     "core": {
-      "instanceName" : "mixer9",
+      "instanceName" : "mixer11",
       "moduleName" : "node-red-contrib-dynamorse-core"
     },
     "http": {
-      "instanceName" : "mixer9",
+      "instanceName" : "mixer11",
       "moduleName" : "node-red-contrib-dynamorse-http-io"
     },
     "ffmpeg": {
-      "instanceName" : "mixer9",
+      "instanceName" : "mixer11",
       "moduleName" : "node-red-contrib-dynamorse-ffmpeg"
     },
     "file": {
-      "instanceName" : "mixer9",
+      "instanceName" : "mixer11",
       "moduleName" : "node-red-contrib-dynamorse-file-io"
     },
     "transition": {
-      "instanceName" : "mixer9",
+      "instanceName" : "mixer11",
       "moduleName" : "node-red-contrib-dynamorse-transition"
     }
   },
   "encodeParams" : {
-    "instanceName": "encoder9",
-    "instanceType": "t2.micro",
+    "instanceName": "encoder11",
+    "instanceType": "r4.xlarge",
     "core": {
-      "instanceName" : "encoder9",
+      "instanceName" : "encoder11",
       "moduleName" : "node-red-contrib-dynamorse-core"
     },
     "http": {
-      "instanceName" : "encoder9",
+      "instanceName" : "encoder11",
       "moduleName" : "node-red-contrib-dynamorse-http-io"
     },
     "ffmpeg": {
-      "instanceName" : "encoder9",
+      "instanceName" : "encoder11",
       "moduleName" : "node-red-contrib-dynamorse-ffmpeg"
     },
     "file": {
-      "instanceName" : "encoder9",
+      "instanceName" : "encoder11",
       "moduleName" : "node-red-contrib-dynamorse-file-io"
     }
   }

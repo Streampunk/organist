@@ -120,16 +120,36 @@
           }
         }
       ],
-      "Next": "DeployMix"
+      "Next": "PrepareMix"
+    },
+    "PrepareMix": {
+      "Type": "Task",
+      "Resource" : "arn:aws:lambda:eu-west-1:258641003975:function:makeAMix",
+      "InputPath" : "$",
+      "ResultPath" : "$",
+      "Next" : "DeployMix"
     },
     "DeployMix": {
-      "Type": "Wait",
-      "Seconds": 3,
+      "Type": "Task",
+      "InputPath" : "$[0]['mixParams']",
+      "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:deployNodeREDFlow",
+      "ResultPath" : null,
+      "OutputPath" : "$",
+      "Next" : "PrepareEncode"
+    },
+    "PrepareEncode": {
+      "Type": "Task",
+      "Resource" : "arn:aws:lambda:eu-west-1:258641003975:function:makeAnEncode",
+      "InputPath" : "$",
+      "ResultPath" : "$",
       "Next" : "DeployEncode"
     },
     "DeployEncode": {
-      "Type": "Wait",
-      "Seconds": 4,
+      "Type": "Task",
+      "InputPath" : "$[1]['encodeParams']",
+      "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:deployNodeREDFlow",
+      "ResultPath" : null,
+      "OutputPath" : "$",
       "Next": "RunState"
     },
     "RunState": {

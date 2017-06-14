@@ -16,6 +16,7 @@
 'use strict';
 
 var http = require('http');
+var fs = require('fs');
 
 var awsRegion = "eu-west-1"
 
@@ -141,6 +142,19 @@ function adminApiReq(method, host, port, path, payload) {
 
     req.write(payload);
     req.end();
+  });
+}
+
+function readJSON(file) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(file, { encoding: 'utf8' }, (err, result) => {
+      if (err) return reject(err);
+      try {
+        resolve(JSON.parse(result.toString()));
+      } catch (se) {
+        reject(se);
+      }
+    });
   });
 }
 
@@ -397,4 +411,31 @@ exports.deployFlow = function(event, context, callback) {
     console.error(err);
     callback(err, null);
   });
+}
+
+exports.makeAMix = function(event, context, callback) {
+  readJSON('flows/cloud1.json').then(x => {
+    event[0].mixParams.flow = x;
+    console.log(JSON.stringify(`Output mixer config flow`, JSON.stringify(event[0].mixParams)));
+    callback(null, event);
+  })
+  .catch(err => {
+    console.error(err);
+    callback(err, null);
+  })
+}
+
+exports.makeAnEncode = function(event, context, callback) {
+  readJSON('flows/cloud2.json').then(x => {
+    // console.log('From event:', event[0].reservation.Reservations[0].Instances[0]);
+    var cloud1DNS = event[0].reservation.Reservations[0].Instances[0].PrivateDnsName;
+    x.nodes[1].pullURL = 'https://' + cloud1DNS;
+    event[1].encodeParams.flow = x;
+    console.log(JSON.stringify(`Output encoder config flow`, JSON.stringify(event[1].encodeParams)));
+    callback(null, event);
+  })
+  .catch(err => {
+    console.error(err);
+    callback(err, null);
+  })
 }
