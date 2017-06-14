@@ -1,0 +1,107 @@
+{
+  "requiresAttributes": [
+    {
+      "value": null,
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs",
+      "targetId": null,
+      "targetType": null
+    },
+    {
+      "value": null,
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21",
+      "targetId": null,
+      "targetType": null
+    },
+    {
+      "value": null,
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19",
+      "targetId": null,
+      "targetType": null
+    }
+  ],
+  "taskDefinitionArn": "arn:aws:ecs:eu-west-1:258641003975:task-definition/Node-RED-Family:16",
+  "networkMode": "bridge",
+  "status": "ACTIVE",
+  "revision": 16,
+  "taskRoleArn": null,
+  "containerDefinitions": [
+    {
+      "volumesFrom": [],
+      "memory": null,
+      "extraHosts": null,
+      "dnsServers": null,
+      "disableNetworking": null,
+      "dnsSearchDomains": null,
+      "portMappings": [
+        {
+          "hostPort": 1880,
+          "containerPort": 1880,
+          "protocol": "tcp"
+        },
+        {
+          "hostPort": 3101,
+          "containerPort": 3101,
+          "protocol": "tcp"
+        },
+        {
+          "hostPort": 8712,
+          "containerPort": 8712,
+          "protocol": "tcp"
+        },
+        {
+          "hostPort": 8713,
+          "containerPort": 8713,
+          "protocol": "tcp"
+        },
+        {
+          "hostPort": 8000,
+          "containerPort": 8000,
+          "protocol": "udp"
+        }
+      ],
+      "hostname": null,
+      "essential": true,
+      "entryPoint": null,
+      "mountPoints": [],
+      "name": "Node-RED",
+      "ulimits": null,
+      "dockerSecurityOptions": null,
+      "environment": [
+        {
+          "name": "LOG_HOSTNAME",
+          "value": "ec2-34-251-149-2.eu-west-1.compute.amazonaws.com"
+        },
+        {
+          "name": "LOG_PORT",
+          "value": "8765"
+        },
+        {
+          "name": "UV_THREADPOOL_SIZE",
+          "value": "32"
+        }
+      ],
+      "links": null,
+      "workingDirectory": null,
+      "readonlyRootFilesystem": null,
+      "image": "nodered/node-red-docker",
+      "command": null,
+      "user": null,
+      "dockerLabels": null,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "NTS",
+          "awslogs-region": "eu-west-1",
+          "awslogs-stream-prefix": "Node-RED"
+        }
+      },
+      "cpu": 1000,
+      "privileged": null,
+      "memoryReservation": 500,
+      "expanded": true
+    }
+  ],
+  "placementConstraints": [],
+  "volumes": [],
+  "family": "Node-RED-Family"
+}
