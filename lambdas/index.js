@@ -183,7 +183,7 @@ exports.newInstance = function(event, context, callback) {
   console.log(`Starting '${instanceType}' instance '${instanceName}' in cluster '${clusterName}'...`);
 
   createCluster({
-    clusterName: clusterName 
+    clusterName: clusterName
   })
   .then (data => {
     return describeImages ({
@@ -307,7 +307,7 @@ exports.startNodeRED = function(event, context, callback) {
   let taskFamilyName = "Node-RED-Family";
 
   runTask({
-    cluster: clusterName, 
+    cluster: clusterName,
     taskDefinition: taskFamilyName,
     count: 1,
     placementConstraints: [{
@@ -315,6 +315,7 @@ exports.startNodeRED = function(event, context, callback) {
     }]
   })
   .then (data => {
+    console.log("Run task promise completes: ", JSON.stringify(data, null, 2));
     return waitForECS("tasksRunning", {
       cluster: data.tasks[0].clusterArn,
       tasks: [
@@ -323,11 +324,11 @@ exports.startNodeRED = function(event, context, callback) {
     });
   })
   .then (data => {
-    console.log(JSON.stringify(data, null, 2));
+    console.log("After tasksRunning received:", JSON.stringify(data, null, 2));
     callback(null, data);
   })
   .catch(err => {
-    console.error(err);
+    console.error("Error in startNodeRED: ", err);
     callback(err, null);
   });
 }

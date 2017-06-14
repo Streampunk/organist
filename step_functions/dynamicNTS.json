@@ -12,24 +12,59 @@
               "Type": "Task",
               "InputPath" : "$.mixParams",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:newInstance",
-              "Next": "ExtractInstanceDetails1",
+              "Next": "BriefPause1",
               "ResultPath" : "$.reservation",
               "OutputPath" : "$"
             },
-            "ExtractInstanceDetails1": {
-              "Type": "Pass",
-              "InputPath": "$.reservation.Reservations[0].Instances[0]",
-              "ResultPath": "$.instanceDetails",
-              "OutputPath": "$",
-              "Next": "InstallMixCapabilities"
-            },
-            "InstallMixCapabilities": {
+            "BriefPause1": {
               "Type": "Wait",
-              "Seconds": 5,
-              "End" : true
+              "Seconds": 20,
+              "Next": "StartNodeRed1"
+            },
+            "StartNodeRed1": {
+              "Type": "Task",
+              "InputPath": "$.mixParams",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:startNodeRED",
+              "ResultPath": "$.nodeRED",
+              "OutputPath": "$",
+              "Next" : "InstallCore1"
+            },
+            "InstallCore1" : {
+              "Type": "Task",
+              "InputPath": "$.mixParams.core",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
+              "ResultPath": null,
+              "Next": "InstallHTTP1"
+            },
+            "InstallHTTP1": {
+              "Type": "Task",
+              "InputPath": "$.mixParams.http",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
+              "ResultPath": null,
+              "Next": "InstallFFMPEG1"
+            },
+            "InstallFFMPEG1": {
+              "Type": "Task",
+              "InputPath": "$.mixParams.ffmpeg",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
+              "ResultPath": null,
+              "Next": "InstallFile1"
+            },
+            "InstallFile1": {
+              "Type": "Task",
+              "InputPath": "$.mixParams.file",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
+              "ResultPath": null,
+              "Next": "InstallTransition1"
+            },
+            "InstallTransition1": {
+              "Type": "Task",
+              "InputPath": "$.mixParams.transition",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
+              "ResultPath": null,
+              "End": true
             }
           }
-
         }, {
           "StartAt": "BringUpCloud2",
           "States": {
@@ -37,21 +72,50 @@
               "Type": "Task",
               "InputPath": "$.encodeParams",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:newInstance",
-              "Next": "ExtractInstanceDetails2",
+              "Next": "BriefPause2",
               "ResultPath" : "$.reservation",
               "OutputPath" : "$"
             },
-            "ExtractInstanceDetails2": {
-              "Type": "Pass",
-              "InputPath": "$.reservation.Reservations[0].Instances[0]",
-              "ResultPath": "$.instanceDetails",
-              "OutputPath": "$",
-              "Next": "InstallEncodeCapabilities"
-            },
-            "InstallEncodeCapabilities": {
+            "BriefPause2": {
               "Type": "Wait",
-              "Seconds": 4,
-              "End" : true
+              "Seconds": 20,
+              "Next": "StartNodeRed2"
+            },
+            "StartNodeRed2": {
+              "Type": "Task",
+              "InputPath": "$.encodeParams",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:startNodeRED",
+              "ResultPath": "$.nodeRED",
+              "OutputPath": "$",
+              "Next" : "InstallCore2"
+            },
+            "InstallCore2" : {
+              "Type": "Task",
+              "InputPath": "$.encodeParams.core",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
+              "ResultPath": null,
+              "Next": "InstallHTTP2"
+            },
+            "InstallHTTP2": {
+              "Type": "Task",
+              "InputPath": "$.encodeParams.http",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
+              "ResultPath": null,
+              "Next": "InstallFFMPEG2"
+            },
+            "InstallFFMPEG2": {
+              "Type": "Task",
+              "InputPath": "$.encodeParams.ffmpeg",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
+              "ResultPath": null,
+              "Next": "InstallFile2"
+            },
+            "InstallFile2": {
+              "Type": "Task",
+              "InputPath": "$.encodeParams.file",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
+              "ResultPath": null,
+              "End": true
             }
           }
         }
@@ -70,7 +134,7 @@
     },
     "RunState": {
       "Type": "Wait",
-      "Seconds": 13,
+      "Seconds": 120,
       "Next": "ParallelTearDown"
     },
     "ParallelTearDown": {
