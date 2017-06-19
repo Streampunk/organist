@@ -17,8 +17,9 @@
 
 var http = require('http');
 var fs = require('fs');
+var uuid = require('uuid');
 
-var awsRegion = "eu-west-1"
+var awsRegion = "eu-west-1";
 
 // Configuring the AWS SDK
 // Credentials from file ~/.aws/credentials - http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html
@@ -31,9 +32,23 @@ var ec2 = new AWS.EC2({apiVersion: '2016-11-15'});
 // Create ECS service interface object
 var ecs = new AWS.ECS({apiVersion: '2014-11-13'});
 
+function delay(cb) {
+  console.log("Delayed execution");
+  cb();
+}
+
 function createCluster(params) {
   return new Promise((resolve, reject) => {
     ecs.createCluster(params, (err, data) => {
+      if (err) reject(err);
+      else resolve(data);
+    });
+  });
+}
+
+function describeClusters(params) {
+  return new Promise((resolve, reject) => {
+    ecs.describeClusters(params, (err, data) => {
       if (err) reject(err);
       else resolve(data);
     });
@@ -135,7 +150,7 @@ function adminApiReq(method, host, port, path, payload) {
       res.on('data', (chunk) => rawData += chunk);
       res.on('end', () => {
         resolve(JSON.parse(rawData));
-      })
+      });
     }).on("error", (e) => {
       reject(`problem with admin API '${method}' request to path '${host}${path}': ${e.message}`);
     });
@@ -182,13 +197,15 @@ exports.showInstances = function(event, context, callback) {
     console.error(err);
     callback(err, null);
   });
-}
+};
 
 exports.newInstance = function(event, context, callback) {
   console.log('Received event: ', JSON.stringify(event, null, 2));
   console.log('Received context: ', JSON.stringify(context, null, 2));
 
-  let instanceName = event.instanceName || "NodeRedInstance";
+
+  let uniqueId = uuid.v4();
+  let instanceName = `${event.instanceName || "NodeRedInstance"}-${uniqueId}`;
   let instanceType = event.instanceType || "t2.micro";
   let clusterName = `${instanceName}-cluster`;
 
@@ -237,9 +254,26 @@ exports.newInstance = function(event, context, callback) {
   .then (data => {
     return waitForEC2("instanceRunning", {
       InstanceIds: [ data.Instances[0].InstanceId ]
-    })
+    });
   })
   .then (data => {
+    return new Promise((resolve, reject) => {
+      console.log("Waiting for container instances");
+      setTimeout(delay, 40000, () => {
+        console.log("Waited - check for container instances");
+        ecs.describeClusters({ clusters: [ clusterName ] }, (err, data) => {
+          if (err) reject(err);
+          else resolve(data);
+        });
+      });
+    });
+  })
+  .then (data => {
+    if (0 === data.clusters[0].registeredContainerInstancesCount) {
+      callback (`Cluster ${clusterName} has no container instances`, null);
+      return;
+    }
+
     return describeInstances ({
       Filters: [{
         Name: "tag:Name",
@@ -252,13 +286,13 @@ exports.newInstance = function(event, context, callback) {
   .then (data => {
     console.log(`Instance '${instanceName}' in cluster '${clusterName}' has been started`);
     console.log(JSON.stringify(data, null, 2));
-    callback(null, data);
+    callback(null, instanceName);
   })
   .catch(err => {
     console.error(err);
     callback(err, null);
   });
-}
+};
 
 exports.terminateInstance = function(event, context, callback) {
   console.log('Received event: ', JSON.stringify(event, null, 2));
@@ -291,7 +325,7 @@ exports.terminateInstance = function(event, context, callback) {
   .then (data => {
     return waitForEC2("instanceTerminated", {
       InstanceIds: [ data.TerminatingInstances[0].InstanceId ]
-    })
+    });
   })
   .then (data => {
     console.log(`Instance '${instanceName}' has been terminated`);
@@ -300,7 +334,7 @@ exports.terminateInstance = function(event, context, callback) {
   .then (data => {
     return deleteCluster ({
       cluster: clusterName
-    })
+    });
   })
   .then (data => {
     console.log(`Cluster '${clusterName}' has been deleted`);
@@ -310,7 +344,7 @@ exports.terminateInstance = function(event, context, callback) {
     console.error(err);
     callback(err, null);
   });
-}
+};
 
 exports.startNodeRED = function(event, context, callback) {
   console.log('Received event: ', JSON.stringify(event, null, 2));
@@ -345,7 +379,7 @@ exports.startNodeRED = function(event, context, callback) {
     console.error("Error in startNodeRED: ", err);
     callback(err, null);
   });
-}
+};
 
 exports.installNodeREDModule = function(event, context, callback) {
   console.log('Received event: ', JSON.stringify(event, null, 2));
@@ -378,7 +412,7 @@ exports.installNodeREDModule = function(event, context, callback) {
     console.error(err);
     callback(err, null);
   });
-}
+};
 
 exports.deployFlow = function(event, context, callback) {
   console.log('Received event: ', JSON.stringify(event, null, 2));
@@ -411,31 +445,64 @@ exports.deployFlow = function(event, context, callback) {
     console.error(err);
     callback(err, null);
   });
-}
+};
 
 exports.makeAMix = function(event, context, callback) {
+  console.log('Received event: ', JSON.stringify(event, null, 2));
+  console.log('Received context: ', JSON.stringify(context, null, 2));
+
   readJSON('flows/cloud1.json').then(x => {
     event[0].mixParams.flow = x;
-    console.log(JSON.stringify(`Output mixer config flow`, JSON.stringify(event[0].mixParams)));
+    console.log('Output mixer config flow: ', JSON.stringify(event[0].mixParams));
     callback(null, event);
   })
   .catch(err => {
     console.error(err);
     callback(err, null);
-  })
-}
+  });
+};
 
 exports.makeAnEncode = function(event, context, callback) {
-  readJSON('flows/cloud2.json').then(x => {
-    // console.log('From event:', event[0].reservation.Reservations[0].Instances[0]);
-    var cloud1DNS = event[0].reservation.Reservations[0].Instances[0].PrivateDnsName;
+  console.log('Received event: ', JSON.stringify(event, null, 2));
+  console.log('Received context: ', JSON.stringify(context, null, 2));
+
+  let instanceName = event[1].encodeParams.instanceName || "NodeRedInstance";
+  let cloud1DNS = '';
+
+  describeInstances ({
+    Filters: [{
+      Name: "tag:Name",
+      Values: [
+        instanceName
+      ]
+    }]
+  })
+  .then (x => {
+    cloud1DNS = x.Reservations[0].Instances[0].PrivateDnsName;
+    return readJSON('flows/cloud2.json')
+  })
+  .then(x => {
     x.nodes[1].pullURL = 'https://' + cloud1DNS;
     event[1].encodeParams.flow = x;
-    console.log(JSON.stringify(`Output encoder config flow`, JSON.stringify(event[1].encodeParams)));
+    console.log('Output encoder config flow: ', JSON.stringify(event[1].encodeParams));
     callback(null, event);
   })
   .catch(err => {
     console.error(err);
     callback(err, null);
-  })
-}
+  });
+};
+
+exports.makeModuleParams = function(event, context, callback) {
+  console.log('Received event: ', JSON.stringify(event, null, 2));
+  console.log('Received context: ', JSON.stringify(context, null, 2));
+
+  let moduleParams = {};
+  for (let module in event.modules) {
+    let nrcName = `node-red-contrib-dynamorse-${event.modules[module]}`;
+    let params = JSON.parse(`{ "${event.modules[module]}": { "instanceName": "${event.instanceName}", "moduleName": "${nrcName}" }}`); 
+    moduleParams = Object.assign (moduleParams, params);
+  }
+
+  callback(null, moduleParams);
+};

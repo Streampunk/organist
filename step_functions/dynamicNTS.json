@@ -13,7 +13,7 @@
               "InputPath" : "$.mixParams",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:newInstance",
               "Next": "BriefPause1",
-              "ResultPath" : "$.reservation",
+              "ResultPath" : "$.mixParams.instanceName",
               "OutputPath" : "$"
             },
             "BriefPause1": {
@@ -27,39 +27,47 @@
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:startNodeRED",
               "ResultPath": "$.nodeRED",
               "OutputPath": "$",
+              "Next" : "MakeModuleParams1"
+            },
+            "MakeModuleParams1": {
+              "Type": "Task",
+              "InputPath": "$.mixParams",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:makeModuleParams",
+              "ResultPath": "$.moduleParams",
+              "OutputPath": "$",
               "Next" : "InstallCore1"
             },
             "InstallCore1" : {
               "Type": "Task",
-              "InputPath": "$.mixParams.core",
+              "InputPath": "$.moduleParams.core",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
               "ResultPath": null,
               "Next": "InstallHTTP1"
             },
             "InstallHTTP1": {
               "Type": "Task",
-              "InputPath": "$.mixParams.http",
+              "InputPath": "$.moduleParams.http-io",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
               "ResultPath": null,
               "Next": "InstallFFMPEG1"
             },
             "InstallFFMPEG1": {
               "Type": "Task",
-              "InputPath": "$.mixParams.ffmpeg",
+              "InputPath": "$.moduleParams.ffmpeg",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
               "ResultPath": null,
               "Next": "InstallFile1"
             },
             "InstallFile1": {
               "Type": "Task",
-              "InputPath": "$.mixParams.file",
+              "InputPath": "$.moduleParams.file-io",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
               "ResultPath": null,
               "Next": "InstallTransition1"
             },
             "InstallTransition1": {
               "Type": "Task",
-              "InputPath": "$.mixParams.transition",
+              "InputPath": "$.moduleParams.transition",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
               "ResultPath": null,
               "End": true
@@ -73,7 +81,7 @@
               "InputPath": "$.encodeParams",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:newInstance",
               "Next": "BriefPause2",
-              "ResultPath" : "$.reservation",
+              "ResultPath" : "$.encodeParams.instanceName",
               "OutputPath" : "$"
             },
             "BriefPause2": {
@@ -87,32 +95,40 @@
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:startNodeRED",
               "ResultPath": "$.nodeRED",
               "OutputPath": "$",
+              "Next" : "MakeModuleParams2"
+            },
+            "MakeModuleParams2": {
+              "Type": "Task",
+              "InputPath": "$.encodeParams",
+              "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:makeModuleParams",
+              "ResultPath": "$.moduleParams",
+              "OutputPath": "$",
               "Next" : "InstallCore2"
             },
             "InstallCore2" : {
               "Type": "Task",
-              "InputPath": "$.encodeParams.core",
+              "InputPath": "$.moduleParams.core",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
               "ResultPath": null,
               "Next": "InstallHTTP2"
             },
             "InstallHTTP2": {
               "Type": "Task",
-              "InputPath": "$.encodeParams.http",
+              "InputPath": "$.moduleParams.http-io",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
               "ResultPath": null,
               "Next": "InstallFFMPEG2"
             },
             "InstallFFMPEG2": {
               "Type": "Task",
-              "InputPath": "$.encodeParams.ffmpeg",
+              "InputPath": "$.moduleParams.ffmpeg",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
               "ResultPath": null,
               "Next": "InstallFile2"
             },
             "InstallFile2": {
               "Type": "Task",
-              "InputPath": "$.encodeParams.file",
+              "InputPath": "$.moduleParams.file-io",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:installNodeREDModule",
               "ResultPath": null,
               "End": true

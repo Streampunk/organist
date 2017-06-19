@@ -1,115 +1,105 @@
 {
-   "label" : "Cloud2 NTS 2017",
-   "id" : "11d8d548.ee272b",
-   "nodes" : [
-      {
-          "id": "595004fa.a6affc",
-          "type": "comment",
-          "z": "4a9a086a.b565f8",
-          "name": "Streampunk Media",
-          "info": "Design and deploy professional media workflows with [_Dynamorse_](https://github.com/Streampunk/dynamorse/blob/master/README.md).\n\nFor support, development or further information, please e-mail [Streampunk Media Ltd](http://www.streampunk.media) on [furnace@streampunk.media](mailto: furnace@streampunk.media).\n\nDynamorse depends on [codecadon](https://github.com/Streampunk/codecadon) that incorprates binaries compiled from unmodified [LGPL v3 licensed code](https://github.com/Streampunk/codecadon/tree/master/licenses) from the FFMPEG project.",
-          "x": 122,
-          "y": 45,
-          "wires": []
-      },
-      {
-          "id": "d06eca46.2696f8",
-          "type": "spm-http-in",
-          "z": "4a9a086a.b565f8",
-          "name": "AWS source",
-          "maxBuffer": 10,
-          "description": "",
-          "device": "f089bf72.0f764",
-          "protocol": "HTTPS",
-          "mode": "pull",
-          "pullURL": "https://REPLACE_ME",
-          "path": "/aws",
-          "port": "8713",
-          "regenerate": false,
-          "parallel": 1,
-          "cacheSize": 10,
-          "fragments": 1,
-          "x": 170,
-          "y": 200,
-          "wires": [
-              [
-                  "df4a5aa7.10cfb8"
-              ]
-          ]
-      },
-      {
-          "id": "fe5d64ac.c99d18",
-          "type": "encoder",
-          "z": "4a9a086a.b565f8",
-          "name": "cloud encoder",
-          "maxBuffer": 10,
-          "description": "",
-          "device": "da7405b8.258bf8",
-          "dstFormat": "h264",
-          "bitrate": 5000000,
-          "gopFrames": 15,
-          "x": 620,
-          "y": 200,
-          "wires": [
-              [
-                  "cea33811.85a0a8",
-                  "8184be6d.60977"
-              ]
-          ]
-      },
-      {
-          "id": "cea33811.85a0a8",
-          "type": "spm-http-out",
-          "z": "4a9a086a.b565f8",
-          "name": "to Geneva",
-          "description": "",
-          "device": "f089bf72.0f764",
-          "protocol": "HTTPS",
-          "mode": "pull",
-          "pushURL": "",
-          "path": "/nts_cloud2",
-          "port": 8712,
-          "regenerate": false,
-          "parallel": 1,
-          "cacheSize": "100",
-          "fragments": 1,
-          "timeout": 0,
-          "backpressure": false,
-          "x": 800,
-          "y": 280,
-          "wires": []
-      },
-      {
-          "id": "8184be6d.60977",
-          "type": "cloud-store-out",
-          "z": "4a9a086a.b565f8",
-          "name": "S3 output",
-          "region": "eu-west-1",
-          "bucket": "spmscratch",
-          "key": "aws.h264",
-          "partSize": 5,
-          "queueSize": 4,
-          "timeout": 0,
-          "x": 800,
-          "y": 140,
-          "wires": []
-      },
-      {
-          "id": "df4a5aa7.10cfb8",
-          "type": "packer",
-          "z": "4a9a086a.b565f8",
-          "name": "cloud packer",
-          "maxBuffer": 10,
-          "description": "",
-          "device": "da7405b8.258bf8",
-          "dstFormat": "420P",
-          "x": 390,
-          "y": 200,
-          "wires": [
-              [
-                  "fe5d64ac.c99d18"
-              ]
-          ]
-      }
+  "label" : "Cloud2 NTS 2017",
+  "id" : "11d8d548.ee272b",
+  "nodes" : [
+    {
+      "id": "d06eca46.2696f8",
+      "type": "spm-http-in",
+      "z": "4a9a086a.b565f8",
+      "name": "AWS source",
+      "maxBuffer": 10,
+      "description": "",
+      "device": "f089bf72.0f764",
+      "protocol": "HTTPS",
+      "mode": "pull",
+      "pullURL": "https://REPLACE_ME",
+      "path": "/aws",
+      "port": "8713",
+      "regenerate": false,
+      "parallel": 1,
+      "cacheSize": 10,
+      "fragments": 1,
+      "x": 170,
+      "y": 200,
+      "wires": [
+        [
+          "df4a5aa7.10cfb8"
+        ]
+      ]
+    },
+    {
+      "id": "fe5d64ac.c99d18",
+      "type": "encoder",
+      "z": "4a9a086a.b565f8",
+      "name": "cloud encoder",
+      "maxBuffer": 10,
+      "description": "",
+      "device": "da7405b8.258bf8",
+      "dstFormat": "h264",
+      "bitrate": 5000000,
+      "gopFrames": 15,
+      "x": 620,
+      "y": 200,
+      "wires": [
+        [
+          "cea33811.85a0a8",
+          "8184be6d.60977"
+        ]
+      ]
+    },
+    {
+      "id": "cea33811.85a0a8",
+      "type": "spm-http-out",
+      "z": "4a9a086a.b565f8",
+      "name": "to Geneva",
+      "description": "",
+      "device": "f089bf72.0f764",
+      "protocol": "HTTPS",
+      "mode": "pull",
+      "pushURL": "",
+      "path": "/nts_cloud2",
+      "port": 8712,
+      "regenerate": false,
+      "parallel": 1,
+      "cacheSize": "100",
+      "fragments": 1,
+      "timeout": 0,
+      "backpressure": false,
+      "x": 800,
+      "y": 280,
+      "wires": []
+    },
+    {
+      "id": "8184be6d.60977",
+      "type": "cloud-store-out",
+      "z": "4a9a086a.b565f8",
+      "name": "S3 output",
+      "region": "eu-west-1",
+      "bucket": "spmscratch",
+      "key": "aws.h264",
+      "partSize": 5,
+      "queueSize": 4,
+      "timeout": 0,
+      "x": 800,
+      "y": 140,
+      "wires": []
+    },
+    {
+      "id": "df4a5aa7.10cfb8",
+      "type": "packer",
+      "z": "4a9a086a.b565f8",
+      "name": "cloud packer",
+      "maxBuffer": 10,
+      "description": "",
+      "device": "da7405b8.258bf8",
+      "dstFormat": "420P",
+      "x": 390,
+      "y": 200,
+      "wires": [
+        [
+          "fe5d64ac.c99d18"
+        ]
+      ]
+    }
   ]
 }

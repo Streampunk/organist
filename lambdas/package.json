@@ -1,6 +1,6 @@
 {
   "name": "lambda",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Testing AWS Lambda",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,8 @@
     "url": "git+https://github.com/Streampunk/lambda.git"
   },
   "dependencies": {
-    "aws-sdk": "^2.52.0"
+    "aws-sdk": "^2.52.0",
+    "uuid": "^2.0.1"
   },
   "devDependencies": {
   },
