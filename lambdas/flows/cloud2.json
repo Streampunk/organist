@@ -23,7 +23,7 @@
       "y": 200,
       "wires": [
         [
-          "df4a5aa7.10cfb8"
+          "fe5d64ac.c99d18"
         ]
       ]
     },
@@ -83,23 +83,6 @@
       "x": 800,
       "y": 140,
       "wires": []
-    },
-    {
-      "id": "df4a5aa7.10cfb8",
-      "type": "packer",
-      "z": "4a9a086a.b565f8",
-      "name": "cloud packer",
-      "maxBuffer": 10,
-      "description": "",
-      "device": "da7405b8.258bf8",
-      "dstFormat": "420P",
-      "x": 390,
-      "y": 200,
-      "wires": [
-        [
-          "fe5d64ac.c99d18"
-        ]
-      ]
     }
   ]
 }

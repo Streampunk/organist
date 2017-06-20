@@ -34,7 +34,7 @@
       "device": "f089bf72.0f764",
       "mix": "1.0",
       "oscPort": 8000,
-      "mixControl": "\/1\/faderA",
+      "mixControl": "\/1\/fader1",
       "x": 660,
       "y": 240,
       "wires": [

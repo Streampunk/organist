@@ -259,7 +259,7 @@ exports.newInstance = function(event, context, callback) {
   .then (data => {
     return new Promise((resolve, reject) => {
       console.log("Waiting for container instances");
-      setTimeout(delay, 40000, () => {
+      setTimeout(delay, 60000, () => {
         console.log("Waited - check for container instances");
         ecs.describeClusters({ clusters: [ clusterName ] }, (err, data) => {
           if (err) reject(err);
@@ -466,7 +466,7 @@ exports.makeAnEncode = function(event, context, callback) {
   console.log('Received event: ', JSON.stringify(event, null, 2));
   console.log('Received context: ', JSON.stringify(context, null, 2));
 
-  let instanceName = event[1].encodeParams.instanceName || "NodeRedInstance";
+  let instanceName = event[0].mixParams.instanceName || "NodeRedInstance";
   let cloud1DNS = '';
 
   describeInstances ({
