@@ -12,14 +12,9 @@
               "Type": "Task",
               "InputPath" : "$.mixParams",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:newInstance",
-              "Next": "BriefPause1",
+              "Next": "StartNodeRed1",
               "ResultPath" : "$.mixParams.instanceName",
               "OutputPath" : "$"
-            },
-            "BriefPause1": {
-              "Type": "Wait",
-              "Seconds": 20,
-              "Next": "StartNodeRed1"
             },
             "StartNodeRed1": {
               "Type": "Task",
@@ -35,7 +30,12 @@
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:makeModuleParams",
               "ResultPath": "$.moduleParams",
               "OutputPath": "$",
-              "Next" : "InstallCore1"
+              "Next" : "BriefPause1"
+            },
+            "BriefPause1": {
+              "Type": "Wait",
+              "Seconds": 10,
+              "Next": "InstallCore1"
             },
             "InstallCore1" : {
               "Type": "Task",
@@ -80,14 +80,9 @@
               "Type": "Task",
               "InputPath": "$.encodeParams",
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:newInstance",
-              "Next": "BriefPause2",
+              "Next": "StartNodeRed2",
               "ResultPath" : "$.encodeParams.instanceName",
               "OutputPath" : "$"
-            },
-            "BriefPause2": {
-              "Type": "Wait",
-              "Seconds": 20,
-              "Next": "StartNodeRed2"
             },
             "StartNodeRed2": {
               "Type": "Task",
@@ -103,7 +98,12 @@
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:makeModuleParams",
               "ResultPath": "$.moduleParams",
               "OutputPath": "$",
-              "Next" : "InstallCore2"
+              "Next" : "BriefPause2"
+            },
+            "BriefPause2": {
+              "Type": "Wait",
+              "Seconds": 10,
+              "Next": "InstallCore2"
             },
             "InstallCore2" : {
               "Type": "Task",
