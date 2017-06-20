@@ -482,7 +482,7 @@ exports.makeAnEncode = function(event, context, callback) {
     return readJSON('flows/cloud2.json')
   })
   .then(x => {
-    x.nodes[1].pullURL = 'https://' + cloud1DNS;
+    x.nodes[0].pullURL = 'https://' + cloud1DNS;
     event[1].encodeParams.flow = x;
     console.log('Output encoder config flow: ', JSON.stringify(event[1].encodeParams));
     callback(null, event);
