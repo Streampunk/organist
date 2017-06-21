@@ -269,10 +269,6 @@ exports.newInstance = function(event, context, callback) {
   .then (data => {
     let curCount = 0;
     let chain = Promise.resolve(curCount);
-    chain = chain.catch (err => { 
-      callback (err);
-      return;
-    });
 
     const maxWaitSeconds = 60;
     let numSeconds = 0;
@@ -294,10 +290,8 @@ exports.newInstance = function(event, context, callback) {
     return chain;
   })
   .then (data => {
-    if (0 === data.clusters[0].registeredContainerInstancesCount) {
-      callback (new Error(`Cluster ${clusterName} has no container instances`));
-      return;
-    }
+    if (0 === data.clusters[0].registeredContainerInstancesCount)
+      return Promise.reject(new Error(`Cluster ${clusterName} has no container instances`));
 
     return describeInstances ({
       Filters: [{
@@ -315,7 +309,7 @@ exports.newInstance = function(event, context, callback) {
   })
   .catch(err => {
     console.error(err);
-    callback(err, null);
+    callback(err);
   });
 };
 
@@ -337,10 +331,9 @@ exports.terminateInstance = function(event, context, callback) {
     }]
   })
   .then (data => {
-    if (0 === data.Reservations.length) {
-      callback (new Error(`Instance ${instanceName} not found`));
-      return;
-    }
+    if (0 === data.Reservations.length)
+      return Promise.reject(new Error(`Instance ${instanceName} not found`));
+
     return terminateInstances ({
       InstanceIds: [
         data.Reservations[0].Instances[0].InstanceId
@@ -422,10 +415,9 @@ exports.installNodeREDModule = function(event, context, callback) {
     }]
   })
   .then (data => {
-    if (0 === data.Reservations.length) {
-      callback (`Instance ${instanceName} not found`, null);
-      return;
-    }
+    if (0 === data.Reservations.length)
+      return Promise.reject(new Error(`Instance ${instanceName} not found`, null));
+
     let host = data.Reservations[0].Instances[0].PublicIpAddress;
     return adminApiReq('POST', host, 1880, '/nodes', JSON.stringify({ "module": moduleName }));
   })
@@ -455,10 +447,9 @@ exports.deployFlow = function(event, context, callback) {
     }]
   })
   .then (data => {
-    if (0 === data.Reservations.length) {
-      callback (new Error(`Instance ${instanceName} not found`));
-      return;
-    }
+    if (0 === data.Reservations.length)
+      return Promise.reject(new Error(`Instance ${instanceName} not found`));
+
     let host = data.Reservations[0].Instances[0].PublicIpAddress;
     return adminApiReq('POST', host, 1880, '/flow', JSON.stringify(flow));
   })
@@ -503,6 +494,9 @@ exports.makeAnEncode = function(event, context, callback) {
     }]
   })
   .then (x => {
+    if (0 === x.Reservations.length)
+      return Promise.reject(new Error(`Instance ${instanceName} not found`));
+
     cloud1DNS = x.Reservations[0].Instances[0].PrivateDnsName;
     return readJSON('flows/cloud2.json')
   })
