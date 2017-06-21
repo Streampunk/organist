@@ -127,6 +127,16 @@ function waitForECS(state, params) {
   });
 }
 
+function waitCountClusterInstances(clusterName) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      ecs.describeClusters({ clusters: [ clusterName ] }).promise()
+      .then ((data) => resolve(data.clusters[0].registeredContainerInstancesCount))
+      .catch ((err) => reject(err));
+    }, 1000);
+  });
+}
+
 function adminApiReq(method, host, port, path, payload) {
   return new Promise((resolve, reject) => {
     var req = http.request({
@@ -143,7 +153,7 @@ function adminApiReq(method, host, port, path, payload) {
       var contentType = res.headers['content-type'];
 
       if (!((200 === statusCode) || (204 == statusCode)))
-        reject(`http '${method}' request to path '${host}${path}' failed with status ${statusCode}`);
+        reject(new Error(`http '${method}' request to path '${host}${path}' failed with status ${statusCode}`));
 
       res.setEncoding('utf8');
       var rawData = "";
@@ -152,7 +162,7 @@ function adminApiReq(method, host, port, path, payload) {
         resolve(JSON.parse(rawData));
       });
     }).on("error", (e) => {
-      reject(`problem with admin API '${method}' request to path '${host}${path}': ${e.message}`);
+      reject(new Error(`problem with admin API '${method}' request to path '${host}${path}': ${e.message}`));
     });
 
     req.write(payload);
@@ -195,7 +205,7 @@ exports.showInstances = function(event, context, callback) {
   })
   .catch(err => {
     console.error(err);
-    callback(err, null);
+    callback(err);
   });
 };
 
@@ -257,20 +267,35 @@ exports.newInstance = function(event, context, callback) {
     });
   })
   .then (data => {
-    return new Promise((resolve, reject) => {
-      console.log("Waiting for container instances");
-      setTimeout(delay, 60000, () => {
-        console.log("Waited - check for container instances");
-        ecs.describeClusters({ clusters: [ clusterName ] }, (err, data) => {
-          if (err) reject(err);
-          else resolve(data);
-        });
-      });
+    let curCount = 0;
+    let chain = Promise.resolve(curCount);
+    chain = chain.catch (err => { 
+      callback (err);
+      return;
     });
+
+    const maxWaitSeconds = 60;
+    let numSeconds = 0;
+    for (let i=0; i<maxWaitSeconds; ++i) {
+      chain = chain.then((count) => {
+        if (count > curCount)
+          console.log(`Found new container instance after ${numSeconds} seconds`);
+        curCount = count;
+
+        numSeconds++;
+        if (maxWaitSeconds === numSeconds)
+          return describeClusters ({ clusters: [ clusterName ] });
+        else if (curCount > 0)
+          return Promise.resolve(curCount);
+        else
+          return waitCountClusterInstances(clusterName);
+      });
+    }
+    return chain;
   })
   .then (data => {
     if (0 === data.clusters[0].registeredContainerInstancesCount) {
-      callback (`Cluster ${clusterName} has no container instances`, null);
+      callback (new Error(`Cluster ${clusterName} has no container instances`));
       return;
     }
 
@@ -313,7 +338,7 @@ exports.terminateInstance = function(event, context, callback) {
   })
   .then (data => {
     if (0 === data.Reservations.length) {
-      callback (`Instance ${instanceName} not found`, null);
+      callback (new Error(`Instance ${instanceName} not found`));
       return;
     }
     return terminateInstances ({
@@ -342,7 +367,7 @@ exports.terminateInstance = function(event, context, callback) {
   })
   .catch(err => {
     console.error(err);
-    callback(err, null);
+    callback(err);
   });
 };
 
@@ -377,7 +402,7 @@ exports.startNodeRED = function(event, context, callback) {
   })
   .catch(err => {
     console.error("Error in startNodeRED: ", err);
-    callback(err, null);
+    callback(err);
   });
 };
 
@@ -410,7 +435,7 @@ exports.installNodeREDModule = function(event, context, callback) {
   })
   .catch(err => {
     console.error(err);
-    callback(err, null);
+    callback(err);
   });
 };
 
@@ -431,7 +456,7 @@ exports.deployFlow = function(event, context, callback) {
   })
   .then (data => {
     if (0 === data.Reservations.length) {
-      callback (`Instance ${instanceName} not found`, null);
+      callback (new Error(`Instance ${instanceName} not found`));
       return;
     }
     let host = data.Reservations[0].Instances[0].PublicIpAddress;
@@ -443,7 +468,7 @@ exports.deployFlow = function(event, context, callback) {
   })
   .catch(err => {
     console.error(err);
-    callback(err, null);
+    callback(err);
   });
 };
 
@@ -458,7 +483,7 @@ exports.makeAMix = function(event, context, callback) {
   })
   .catch(err => {
     console.error(err);
-    callback(err, null);
+    callback(err);
   });
 };
 
@@ -489,7 +514,7 @@ exports.makeAnEncode = function(event, context, callback) {
   })
   .catch(err => {
     console.error(err);
-    callback(err, null);
+    callback(err);
   });
 };
 
