@@ -32,101 +32,6 @@ var ec2 = new AWS.EC2({apiVersion: '2016-11-15'});
 // Create ECS service interface object
 var ecs = new AWS.ECS({apiVersion: '2014-11-13'});
 
-function delay(cb) {
-  console.log("Delayed execution");
-  cb();
-}
-
-function createCluster(params) {
-  return new Promise((resolve, reject) => {
-    ecs.createCluster(params, (err, data) => {
-      if (err) reject(err);
-      else resolve(data);
-    });
-  });
-}
-
-function describeClusters(params) {
-  return new Promise((resolve, reject) => {
-    ecs.describeClusters(params, (err, data) => {
-      if (err) reject(err);
-      else resolve(data);
-    });
-  });
-}
-
-function deleteCluster(params) {
-  return new Promise((resolve, reject) => {
-    ecs.deleteCluster(params, (err, data) => {
-      if (err) reject(err);
-      else resolve(data);
-    });
-  });
-}
-
-function describeInstances(params) {
-  return new Promise((resolve, reject) => {
-    ec2.describeInstances(params, (err, data) => {
-      if (err) reject(err);
-      else resolve(data);
-    });
-  });
-}
-
-function describeImages(params) {
-  return new Promise((resolve, reject) => {
-    ec2.describeImages(params, (err, data) => {
-      if (err) reject(err);
-      else resolve(data);
-    });
-  });
-}
-
-function runInstances(params) {
-  return new Promise((resolve, reject) => {
-    ec2.runInstances(params, (err, data) => {
-      if (err) reject(err);
-      else resolve(data);
-    });
-  });
-}
-
-function waitForEC2(state, params) {
-  return new Promise((resolve, reject) => {
-    ec2.waitFor(state, params, (err, data) => {
-      if (err) reject(err);
-      else resolve(data);
-    });
-  });
-}
-
-function terminateInstances(params) {
-  return new Promise((resolve, reject) => {
-    ec2.terminateInstances(params, (err, data) => {
-      if (err) reject(err);
-      else resolve(data);
-    });
-  });
-}
-
-function runTask(params) {
-  return new Promise((resolve, reject) => {
-    ecs.runTask(params, (err, data) => {
-      if (err) reject(err);
-      else resolve(data);
-    });
-  });
-}
-
-function waitForECS(state, params) {
-  return new Promise((resolve, reject) => {
-    ecs.waitFor(state, params, (err, data) => {
-      if (err) reject(err);
-      else resolve(data);
-    });
-  });
-}
-
 function waitCountClusterInstances(clusterName) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
@@ -191,14 +96,14 @@ exports.showInstances = function(event, context, callback) {
 
   console.log(`Showing instances with name '${instanceName}'...`);
 
-  describeInstances({
+  ec2.describeInstances({
     Filters: [{
       Name: "tag:Name",
       Values: [
         instanceName
       ]
     }]
-  })
+  }).promise()
   .then (data => {
     console.log(JSON.stringify(data, null, 2));
     callback(null, data);
@@ -223,21 +128,21 @@ exports.newInstance = function(event, context, callback) {
 
   console.log(`Starting '${instanceType}' instance '${instanceName}' in cluster '${clusterName}'...`);
 
-  createCluster({
+  ecs.createCluster({
     clusterName: clusterName
-  })
+  }).promise()
   .then (data => {
-    return describeImages ({
+    return ec2.describeImages({
       Filters: [{
         Name: "name",
         Values: [
           "amzn-ami-2016.09.g-amazon-ecs-optimized"
         ]
       }]
-    });
+    }).promise();
   })
   .then (data => {
-    return runInstances ({
+    return ec2.runInstances({
       ImageId: data.Images[0].ImageId,
       InstanceType: instanceType,
       Monitoring: {
@@ -259,12 +164,12 @@ exports.newInstance = function(event, context, callback) {
         securityGroupName
       ],
       UserData: Buffer.from(`#!/bin/bash\n echo ECS_CLUSTER=${clusterName} >> /etc/ecs/ecs.config`).toString('base64')
-    });
+    }).promise();
   })
   .then (data => {
-    return waitForEC2("instanceRunning", {
+    return ec2.waitFor("instanceRunning", {
       InstanceIds: [ data.Instances[0].InstanceId ]
-    });
+    }).promise();
   })
   .then (data => {
     let curCount = 0;
@@ -280,7 +185,7 @@ exports.newInstance = function(event, context, callback) {
 
         numSeconds++;
         if (maxWaitSeconds === numSeconds)
-          return describeClusters ({ clusters: [ clusterName ] });
+          return ecs.describeClusters({ clusters: [ clusterName ] }).promise();
         else if (curCount > 0)
           return Promise.resolve(curCount);
         else
@@ -293,14 +198,14 @@ exports.newInstance = function(event, context, callback) {
     if (0 === data.clusters[0].registeredContainerInstancesCount)
       return Promise.reject(new Error(`Cluster ${clusterName} has no container instances`));
 
-    return describeInstances ({
+    return ec2.describeInstances({
       Filters: [{
         Name: "tag:Name",
         Values: [
           instanceName
         ]
       }]
-    });
+    }).promise();
   })
   .then (data => {
     console.log(`Instance '${instanceName}' in cluster '${clusterName}' has been started`);
@@ -322,37 +227,37 @@ exports.terminateInstance = function(event, context, callback) {
 
   console.log(`Terminating instance '${instanceName}'...`);
 
-  describeInstances ({
+  ec2.describeInstances({
     Filters: [{
       Name: "tag:Name",
       Values: [
         instanceName
       ]
     }]
-  })
+  }).promise()
   .then (data => {
     if (0 === data.Reservations.length)
       return Promise.reject(new Error(`Instance ${instanceName} not found`));
 
-    return terminateInstances ({
+    return ec2.terminateInstances({
       InstanceIds: [
         data.Reservations[0].Instances[0].InstanceId
       ]
-    });
+    }).promise();
   })
   .then (data => {
-    return waitForEC2("instanceTerminated", {
+    return ec2.waitFor("instanceTerminated", {
       InstanceIds: [ data.TerminatingInstances[0].InstanceId ]
-    });
+    }).promise();
   })
   .then (data => {
     console.log(`Instance '${instanceName}' has been terminated`);
     console.log(JSON.stringify(data, null, 2));
   })
   .then (data => {
-    return deleteCluster ({
+    return ecs.deleteCluster({
       cluster: clusterName
-    });
+    }).promise();
   })
   .then (data => {
     console.log(`Cluster '${clusterName}' has been deleted`);
@@ -372,22 +277,22 @@ exports.startNodeRED = function(event, context, callback) {
   let clusterName = `${instanceName}-cluster`;
   let taskFamilyName = "Node-RED-Family";
 
-  runTask({
+  ecs.runTask({
     cluster: clusterName,
     taskDefinition: taskFamilyName,
     count: 1,
     placementConstraints: [{
       type: "distinctInstance"
     }]
-  })
+  }).promise()
   .then (data => {
     console.log("Run task promise completes: ", JSON.stringify(data, null, 2));
-    return waitForECS("tasksRunning", {
+    return ecs.waitFor("tasksRunning", {
       cluster: data.tasks[0].clusterArn,
       tasks: [
         data.tasks[0].containers[0].taskArn
       ]
-    });
+    }).promise();
   })
   .then (data => {
     console.log("After tasksRunning received:", JSON.stringify(data, null, 2));
@@ -406,14 +311,14 @@ exports.installNodeREDModule = function(event, context, callback) {
   let instanceName = event.instanceName || "NodeRedInstance";
   let moduleName = event.moduleName || "node-red-contrib-dynamorse-core";
 
-  describeInstances ({
+  ec2.describeInstances({
     Filters: [{
       Name: "tag:Name",
       Values: [
         instanceName
       ]
     }]
-  })
+  }).promise()
   .then (data => {
     if (0 === data.Reservations.length)
       return Promise.reject(new Error(`Instance ${instanceName} not found`, null));
@@ -438,14 +343,14 @@ exports.deployFlow = function(event, context, callback) {
   let instanceName = event.instanceName || "NodeRedInstance";
   let flow = event.flow;
 
-  describeInstances ({
+  ec2.describeInstances({
     Filters: [{
       Name: "tag:Name",
       Values: [
         instanceName
       ]
     }]
-  })
+  }).promise()
   .then (data => {
     if (0 === data.Reservations.length)
       return Promise.reject(new Error(`Instance ${instanceName} not found`));
@@ -485,14 +390,14 @@ exports.makeAnEncode = function(event, context, callback) {
   let instanceName = event[0].mixParams.instanceName || "NodeRedInstance";
   let cloud1DNS = '';
 
-  describeInstances ({
+  ec2.describeInstances({
     Filters: [{
       Name: "tag:Name",
       Values: [
         instanceName
       ]
     }]
-  })
+  }).promise()
   .then (x => {
     if (0 === x.Reservations.length)
       return Promise.reject(new Error(`Instance ${instanceName} not found`));
