@@ -49,6 +49,7 @@ function adminApiReq(method, host, port, path, payload) {
       port : port,
       path : path,
       method : method,
+      timeout : 180000,
       headers : {
         'Content-Type' : 'application/json',
         'Content-Length' : payload.length
@@ -117,7 +118,6 @@ exports.showInstances = function(event, context, callback) {
 exports.newInstance = function(event, context, callback) {
   console.log('Received event: ', JSON.stringify(event, null, 2));
   console.log('Received context: ', JSON.stringify(context, null, 2));
-
 
   let uniqueId = uuid.v4();
   let instanceName = `${event.instanceName || "NodeRedInstance"}-${uniqueId}`;
@@ -403,7 +403,7 @@ exports.makeAnEncode = function(event, context, callback) {
       return Promise.reject(new Error(`Instance ${instanceName} not found`));
 
     cloud1DNS = x.Reservations[0].Instances[0].PrivateDnsName;
-    return readJSON('flows/cloud2.json')
+    return readJSON('flows/cloud2.json');
   })
   .then(x => {
     x.nodes[0].pullURL = 'https://' + cloud1DNS;
