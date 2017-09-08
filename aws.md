@@ -10,7 +10,9 @@ This project contains a prototype _dynamic software infrastructure_ orchestrator
 * run for a while;
 * tear everything down and tidy up.
 
-This is a prototype demonstration of what could be achieved to orchestrate dynamic creation and management of infrastructure for professional media production using the public cloud.
+This is a prototype demonstration of what could be achieved to orchestrate dynamic creation and management of infrastructure for professional media production using the public cloud. The step funnction was created as part of the demonstration illustrated below:
+
+![NTS demo](images/demo_diagram.png)
 
 Also included in this package is a configuration to set up an [Elastic Stack](https://www.elastic.co/products) in a container in the cloud, allowing metrics to be collected and analysed from Node-RED flows and the containers on which they run.
 
@@ -35,16 +37,16 @@ Given an AWS account, follow the steps below - with a degree of flexibility to y
 4. Create lambda functions for the following functions in the `index.js` file of the lambdas. For each function, specify a name, select `Node.JS 6.X` and select an existing S3 bucket as the code location, copying in the link from step 1. Each should have its handler set to `index.<function_name>` with an existing role set to the one created in step 3. Do this for each of: `terminateInstance`, `newInstance`, `showInstances`, `installNodeREDModule`, `deployNodeREDModule`, `makeModuleParams`, `makeAnEncode`, `makeAMix`, `startNodeRED`.
 5. Create a step function using the [step_functions/dynamicNTS.json] file. Go through each of the refences to lambda functions and update them to ARNs for lambda functions in your own account. Attach the policy created in step 2.
 6. In the EC2 section, create a security group called `Node-RED security group` in the default VPC. Add inbound rules for:
- * Custom UDP, port 8000, source `0.0.0.0/0`, _old logging protocol_
+ * Custom UDP, port 8000, source `0.0.0.0/0`, _old logging protocol_.
  * Custom TCP, port 3101, source `0.0.0.0/0`, _NMOS node API access_.
  * Custom TCP, ports 8712 - 8713, source `0.0.0.0/0`, _HTTP/S default transport ports_.
  * Custom TCP, ports 1880, source `0.0.0.0/0`, _Node-RED web UI and REST API access_.
 7. Create an EC2 container service _task definition_ called `Node-RED-family` and based on [tasks/Node-Red-Family.json]. Take specific note of the value set for property `awslogs-group`, e.g. `NTS`.
-8. In CloudWatch, create a new AWS log group with the name identified in step 7.
+8. In CloudWatch, create a new AWS log group with the name identified in step 7, e.g. `NTS`.
 
 ## Running
 
-Create a new execution of the step function. Use the following example JSON as the basis for the input:
+Create a new execution of the step function. Use the following example JSON as the basis for the input, changing the instance type to an appropriate size:
 
 ```json
 {
