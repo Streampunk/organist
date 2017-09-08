@@ -16,14 +16,14 @@ Also included in this package is a configuration to set up an [Elastic Stack](ht
 
 # Installation
 
-## Pits and pieces
+## Bits and pieces
 
 This project includes some resources to help set up the step functions:
 
-* [lambdas] - a Node.JS module containing all the code for the lambda functions in use and a copy of the dependent modules;
-* [tasks] - includes EC2 container service task definition for a cluster containing a single Node-RED container;
-* [step_functions] - Orchestration recipe, a configuration of the step functions orchestrator written in [Amazon States Language](https://states-language.net/spec.html).
-* [logstash] - configuration for [logstash](https://www.elastic.co/products/logstash) to work with dynamorse modules.
+* [lambdas](./lambdas) - a Node.JS module containing all the code for the lambda functions in use and a copy of the dependent modules;
+* [tasks](./tasks) - includes EC2 container service task definition for a cluster containing a single Node-RED container;
+* [step_functions](./step_function) - Orchestration recipe, a configuration of the step functions orchestrator written in [Amazon States Language](https://states-language.net/spec.html).
+* [logstash](./logstash) - configuration for [logstash](https://www.elastic.co/products/logstash) to work with dynamorse modules.
 
 ## Steps summary
 
