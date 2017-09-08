@@ -35,13 +35,13 @@ Given an AWS account, follow the steps below - with a degree of flexibility to y
 2. Create a policy for the execution of step functions, called e.g. `StatesExecutionPolucy-eu-west-1`. Follow the steps outlined by AWS at http://docs.aws.amazon.com/step-functions/latest/dg/procedure-create-iam-role.html
 3. In IAM, create a role for lambda functions to use the AWS SDK, called e.g. `LambdaSDKAccess`. Attach policies `AmazonEC2FullAccess`, `AmazonEC2ContainerServiceFullAccess`, `AWSLambdaExecute` and the states execution policy created in step 2.
 4. Create lambda functions for the following functions in the `index.js` file of the lambdas. For each function, specify a name, select `Node.JS 6.X` and select an existing S3 bucket as the code location, copying in the link from step 1. Each should have its handler set to `index.<function_name>` with an existing role set to the one created in step 3. Do this for each of: `terminateInstance`, `newInstance`, `showInstances`, `installNodeREDModule`, `deployNodeREDModule`, `makeModuleParams`, `makeAnEncode`, `makeAMix`, `startNodeRED`.
-5. Create a step function using the [step_functions/dynamicNTS.json] file. Go through each of the refences to lambda functions and update them to ARNs for lambda functions in your own account. Attach the policy created in step 2.
+5. Create a step function using the [dynamicNTS.json](step_functions/dynamicNTS.json) file. Go through each of the refences to lambda functions and update them to ARNs for lambda functions in your own account. Attach the policy created in step 2.
 6. In the EC2 section, create a security group called `Node-RED security group` in the default VPC. Add inbound rules for:
- * Custom UDP, port 8000, source `0.0.0.0/0`, _old logging protocol_.
- * Custom TCP, port 3101, source `0.0.0.0/0`, _NMOS node API access_.
- * Custom TCP, ports 8712 - 8713, source `0.0.0.0/0`, _HTTP/S default transport ports_.
- * Custom TCP, ports 1880, source `0.0.0.0/0`, _Node-RED web UI and REST API access_.
-7. Create an EC2 container service _task definition_ called `Node-RED-family` and based on [tasks/Node-Red-Family.json]. Take specific note of the value set for property `awslogs-group`, e.g. `NTS`.
+   * Custom UDP, port 8000, source `0.0.0.0/0`, _old logging protocol_.
+   * Custom TCP, port 3101, source `0.0.0.0/0`, _NMOS node API access_.
+   * Custom TCP, ports 8712 - 8713, source `0.0.0.0/0`, _HTTP/S default transport ports_.
+   * Custom TCP, ports 1880, source `0.0.0.0/0`, _Node-RED web UI and REST API access_.
+7. Create an EC2 container service _task definition_ called `Node-RED-family` and based on [Node-Red-Family.json](tasks/Node-Red-Family.json). Take specific note of the value set for property `awslogs-group`, e.g. `NTS`.
 8. In CloudWatch, create a new AWS log group with the name identified in step 7, e.g. `NTS`.
 
 ## Running

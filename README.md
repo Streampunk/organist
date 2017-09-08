@@ -1,7 +1,14 @@
 # organist
 Orchestrating the nodes and pulling out all the stops.
 
-## New FIMS and NMOS - a demonstration of building the JT-NM jigsaw
+This project has two separate although related parts:
+
+1. [Orchestrating dynamic software infrastructure using AWS step functions](./aws.md).
+2. Some early examples of how an updated FIMS could be used to describe work carried out by streaming infrastructure (read on).
+
+# New FIMS and NMOS
+
+## Demonstration of building the JT-NM jigsaw
 
 It all starts with the conceptual model from the [JT-NM Reference Architecture](file:///C:/users/sparkpunk/Google%20Drive/Streampunk%20Drive/tech/specs/jtnm/JT-NMReferenceArchitecturev1.0%20150904%20FINAL.pdf). The elements of this model can be broken down into:
 
