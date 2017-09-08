@@ -18,20 +18,20 @@ Also included in this package is a configuration to set up an [Elastic Stack](ht
 
 # Installation
 
-## Pits and pieces
+## Bits and pieces
 
 This project includes some resources to help set up the step functions:
 
-* [lambdas] - a Node.JS module containing all the code for the lambda functions in use and a copy of the dependent modules;
-* [tasks] - includes EC2 container service task definition for a cluster containing a single Node-RED container;
-* [step_functions] - Orchestration recipe, a configuration of the step functions orchestrator written in [Amazon States Language](https://states-language.net/spec.html).
-* [logstash] - configuration for [logstash](https://www.elastic.co/products/logstash) to work with dynamorse modules.
+* [lambdas](./lambdas) - a Node.JS module containing all the code for the lambda functions in use and a copy of the dependent modules;
+* [tasks](./tasks) - includes EC2 container service task definition for a cluster containing a single Node-RED container;
+* [step_functions](./step_functions) - Orchestration recipe, a configuration of the step functions orchestrator written in [Amazon States Language](https://states-language.net/spec.html).
+* [logstash](./logstash) - configuration for [logstash](https://www.elastic.co/products/logstash) to work with dynamorse modules.
 
 ## Steps summary
 
-Given an AWS account, follow the steps below - with a degree of flexibility to your environemtn - to get an orchestrator running from scratch:
+Given an AWS account, follow the steps below - with a degree of flexibility to your environment - to get an orchestrator running from scratch:
 
-1. In the [lambdas] folder, run `npm install`. Zip up the entire folder and upload to an S3 bucket of your choice. Copy the link to the object in the bucket.
+1. In the [lambdas](./lambdas) folder, run `npm install`. Zip up the entire folder and upload to an S3 bucket of your choice. Copy the link to the object in the bucket.
 2. Create a policy for the execution of step functions, called e.g. `StatesExecutionPolucy-eu-west-1`. Follow the steps outlined by AWS at http://docs.aws.amazon.com/step-functions/latest/dg/procedure-create-iam-role.html
 3. In IAM, create a role for lambda functions to use the AWS SDK, called e.g. `LambdaSDKAccess`. Attach policies `AmazonEC2FullAccess`, `AmazonEC2ContainerServiceFullAccess`, `AWSLambdaExecute` and the states execution policy created in step 2.
 4. Create lambda functions for the following functions in the `index.js` file of the lambdas. For each function, specify a name, select `Node.JS 6.X` and select an existing S3 bucket as the code location, copying in the link from step 1. Each should have its handler set to `index.<function_name>` with an existing role set to the one created in step 3. Do this for each of: `terminateInstance`, `newInstance`, `showInstances`, `installNodeREDModule`, `deployNodeREDModule`, `makeModuleParams`, `makeAnEncode`, `makeAMix`, `startNodeRED`.
