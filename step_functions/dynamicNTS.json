@@ -30,12 +30,12 @@
               "Resource": "arn:aws:lambda:eu-west-1:258641003975:function:makeModuleParams",
               "ResultPath": "$.moduleParams",
               "OutputPath": "$",
-              "Next" : "BriefPause1"
+              "Next": "BriefPause1"
             },
             "BriefPause1": {
               "Type": "Wait",
               "Seconds": 10,
-              "Next": "InstallCore1"
+              "Next" : "InstallCore1"
             },
             "InstallCore1" : {
               "Type": "Task",
@@ -103,7 +103,7 @@
             "BriefPause2": {
               "Type": "Wait",
               "Seconds": 10,
-              "Next": "InstallCore2"
+              "Next" : "InstallCore2"
             },
             "InstallCore2" : {
               "Type": "Task",
