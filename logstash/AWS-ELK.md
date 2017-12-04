@@ -28,5 +28,29 @@ set LOG_HOSTNAME=<public IP address/name of logstash instance>
 set LOG_PORT=8765
 ```
 
+## Metricbeat installation and configuration
+[Install](https://www.elastic.co/guide/en/beats/metricbeat/current/metricbeat-installation.html) Metricbeat on the server. Configure Metricbeat by editing the configuration file metricbeat.yml as follows:
+```yaml
+metricbeat.modules:
+- module: system
+  metricsets:
+    - cpu # CPU stats
+    #- load # System Load stats - not available on Windows
+    - core  # Per CPU core stats
+    - diskio # IO stats
+    - filesystem # Per filesystem stats
+    - fsstat # File system summary stats
+    - memory # Memory stats
+    - network # Network stats
+    - process # Per process stats
+    #- socket # Sockets (linux only)
+  enabled: true
+  period: 10s
+  processes: ['.*']
+
+output.logstash:
+  hosts: ["<public IP address/name of logstash instance>:5044"]
+```
+
 ## Kibana configuration
-In the overview page of the ES instance, a Kibana URL is provided. This will bring up a Kibana page. Go to the Management tab (cog icon), select Saved Objects, select redioactive then View dashboard.
+In the overview page of the ES instance, a Kibana URL is provided. This will bring up a Kibana page. Go to the Management tab (cog icon) and select Saved Objects. For the Dynamorse redioactive dashboard select redioactive then View dashboard. There are also a variety of Metricbeat dashboards available.
